@@ -43,6 +43,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         var bucket = cache.get(ip, _ -> createBucket());
 
         if (!bucket.tryConsume(1)) {
+            log.warn("CF-Connecting-IP: {}", request.getHeader("CF-Connecting-IP"));
+            log.warn("X-Forwarded-For: {}", request.getHeader("X-Forwarded-For"));
             log.warn("Too many requests from IP: {}", ip);
 
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
