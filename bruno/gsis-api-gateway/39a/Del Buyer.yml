@@ -5,17 +5,15 @@ info:
 
 http:
   method: DELETE
-  url: "{{baseUrl}}/api/v1/gsis/39a/buyer/:vat?X-GSIS-Username={{gsis_39a_username}}&X-GSIS-Password={{gsis_39a_password}}&X-GSIS-CalledBy={{gsis_39a_calledby}}"
-  params:
+  url: "{{baseUrl}}/api/v1/gsis/39a/buyer/:vat"
+  headers:
     - name: X-GSIS-Username
       value: "{{gsis_39a_username}}"
-      type: query
     - name: X-GSIS-Password
       value: "{{gsis_39a_password}}"
-      type: query
     - name: X-GSIS-CalledBy
       value: "{{gsis_39a_calledby}}"
-      type: query
+  params:
     - name: vat
       value: "803237662"
       type: path

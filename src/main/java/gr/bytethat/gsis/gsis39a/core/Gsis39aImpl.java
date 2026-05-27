@@ -7,7 +7,6 @@ import gr.bytethat.gsis.gsis39a.abstractions.Buyer;
 import gr.bytethat.gsis.gsis39a.abstractions.Gsis39a;
 import gr.bytethat.gsis.gsis39a.abstractions.Representative;
 import gr.bytethat.gsis.gsis39a.core.client.*;
-import jakarta.xml.ws.BindingProvider;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -230,6 +229,10 @@ public class Gsis39aImpl implements Gsis39a {
                     }
                 }
 
+                if (response.getBu7OutTab() == null) {
+                    break;
+                }
+
                 response.getBu7OutTab()
                         .getItem()
                         .stream()
@@ -271,7 +274,10 @@ public class Gsis39aImpl implements Gsis39a {
         }
 
         var representative = this.getBuyerRepresentative(vat, representativeVat)
-                .orElseThrow(() -> new GsisException(GsisException.ErrorCodes.NOT_FOUND, "Representative with VAT %s not found for buyer %s".formatted(representativeVat, vat)));
+                .orElse(new Representative(
+                        representativeVat,
+                        "",
+                        List.of()));
 
         if (hasOverlap(representative.ranges(), range)) {
             throw new GsisException(GsisException.ErrorCodes.OVERLAPPING_RANGE, "The requested date range overlaps with an existing authorized period for this representative.");
