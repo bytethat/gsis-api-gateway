@@ -5,6 +5,7 @@ import gr.bytethat.gsis.common.abstractions.exception.GsisRemoteException;
 import gr.bytethat.gsis.common.core.GreekVatValidator;
 import gr.bytethat.gsis.gsis39a.abstractions.Buyer;
 import gr.bytethat.gsis.gsis39a.abstractions.Gsis39a;
+import gr.bytethat.gsis.gsis39a.abstractions.Otp;
 import gr.bytethat.gsis.gsis39a.abstractions.Representative;
 import gr.bytethat.gsis.gsis39a.core.client.*;
 import lombok.extern.slf4j.Slf4j;
@@ -369,6 +370,119 @@ public class Gsis39aImpl implements Gsis39a {
                     throw new GsisRemoteException(code, description);
                 }
             }
+        } catch (GsisRemoteException | GsisException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GsisException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Otp getOtp(String vat, String representativeId) {
+        if (!GreekVatValidator.isValid(vat)) {
+            throw new GsisException(GsisException.ErrorCodes.INVALID_VAT_FORMAT, "Invalid buyer VAT format. Must be a 9-digit numeric string with a valid check digit.");
+        }
+
+        if (representativeId != null && !representativeId.trim().isEmpty() && !GreekVatValidator.isValid(representativeId)) {
+            throw new GsisException(GsisException.ErrorCodes.INVALID_VAT_FORMAT, "Invalid representative VAT format. Must be a 9-digit numeric string with a valid check digit.");
+        }
+
+        try {
+            var factory = new ObjectFactory();
+            var input = factory.createVtWs39AfpaBu9InRtType();
+
+            input.setBuyerAfm(factory.createVtWs39AfpaBu9InRtTypeBuyerAfm(vat));
+            if (representativeId != null && !representativeId.trim().isEmpty()) {
+                input.setReprAfm(factory.createVtWs39AfpaBu9InRtTypeReprAfm(representativeId));
+            }
+            input.setOtpActionRequested(factory.createVtWs39AfpaBu9InRtTypeOtpActionRequested("F"));
+
+            VtWs39AfpaBu9ResultRtType response;
+            try {
+                var result = service.getVtWs39AFPAServicePort().vt39AfpaBu9GetOtp(input);
+
+                response = (result != null) ? result.getVtWs39AfpaBu9ResultRtType() : null;
+
+                if (response == null) {
+                    throw new NullPointerException("GSIS returned null response");
+                }
+            } catch (Exception e) {
+                log.error("GSIS OTP retrieval failed", e);
+                throw new GsisException(GsisException.ErrorCodes.GSIS_COMMUNICATION_ERROR, e.getMessage(), e);
+            }
+
+            var error = response.getMessageRec();
+            if (error != null) {
+                var code = error.getMessageCode() != null ? error.getMessageCode().getValue() : null;
+                var description = error.getMessageDescr() != null ? error.getMessageDescr().getValue() : null;
+
+                if (code != null
+                        && !code.trim().isEmpty()
+                        && !"OK".equalsIgnoreCase(code.trim())
+                        && !"39AFPA_OTP_NEW_NOTFOUND".equalsIgnoreCase(code.trim())) {// Ειδική περίπτωση που σημαίνει ότι δεν υπάρχει ενεργό OTP αλλά δεν είναι σφάλμα, απλά πρέπει να εκδώσουμε νέο
+                    throw new GsisRemoteException(code, description);
+                }
+            }
+
+            var now = java.time.Instant.now();
+
+            return OtpMapper.map(response).stream()
+                    .filter(otp -> {
+                        if (otp.validStart() == null || now.isBefore(otp.validStart())) {
+                            return false;
+                        }
+                        if (otp.validEnd() == null || now.isAfter(otp.validEnd())) {
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    .findFirst()
+                    .orElse(issueNewOTP(vat, representativeId));
+        } catch (GsisRemoteException | GsisException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GsisException(e.getMessage(), e);
+        }
+    }
+
+    private Otp issueNewOTP(String vat, String representativeId) {
+        try {
+            var factory = new ObjectFactory();
+            var input = factory.createVtWs39AfpaBu9InRtType();
+
+            input.setBuyerAfm(factory.createVtWs39AfpaBu9InRtTypeBuyerAfm(vat));
+            input.setReprAfm(factory.createVtWs39AfpaBu9InRtTypeReprAfm(representativeId));
+            input.setOtpActionRequested(factory.createVtWs39AfpaBu9InRtTypeOtpActionRequested("C"));
+            input.setOtpSizeRequested(factory.createVtWs39AfpaBu9InRtTypeOtpSizeRequested(BigDecimal.valueOf(1)));
+
+            VtWs39AfpaBu9ResultRtType response;
+            try {
+                var result = service.getVtWs39AFPAServicePort().vt39AfpaBu9GetOtp(input);
+
+                response = (result != null) ? result.getVtWs39AfpaBu9ResultRtType() : null;
+
+                if (response == null) {
+                    throw new NullPointerException("GSIS returned null response during OTP creation");
+                }
+            } catch (Exception e) {
+                log.error("GSIS OTP creation failed", e);
+                throw new GsisException(GsisException.ErrorCodes.GSIS_COMMUNICATION_ERROR, e.getMessage(), e);
+            }
+
+            var error = response.getMessageRec();
+            if (error != null) {
+                var code = error.getMessageCode() != null ? error.getMessageCode().getValue() : null;
+                var description = error.getMessageDescr() != null ? error.getMessageDescr().getValue() : null;
+
+                if (code != null && !code.trim().isEmpty() && !"OK".equalsIgnoreCase(code.trim())) {
+                    throw new GsisRemoteException(code, description);
+                }
+            }
+
+            return OtpMapper.map(response).stream()
+                    .findFirst()
+                    .orElseThrow(() -> new GsisException(GsisException.ErrorCodes.NOT_FOUND, "No OTP was returned after creation request."));
         } catch (GsisRemoteException | GsisException e) {
             throw e;
         } catch (Exception e) {

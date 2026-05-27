@@ -14,4 +14,7 @@ public interface Gsis39a {
     void createRange(String vat, String representativeVat, Representative.Range range);
     void updateRange(String vat, String representativeVat, Representative.Range range);
     void deleteRange(String vat, String representativeVat, String rangeId);
+
+    Otp getOtp(String vat, String representativeId);
 }
+

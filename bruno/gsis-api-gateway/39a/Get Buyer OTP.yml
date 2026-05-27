@@ -1,11 +1,11 @@
 info:
-  name: Get Buyer Representatives
+  name: Get Buyer OTP
   type: http
-  seq: 5
+  seq: 8
 
 http:
   method: GET
-  url: "{{baseUrl}}/api/v1/gsis/39a/buyer/:vat/representatives"
+  url: "{{baseUrl}}/api/v1/gsis/39a/buyer/:vat/representatives/:representative/otp"
   headers:
     - name: X-GSIS-Username
       value: "{{gsis_39a_username}}"
@@ -14,6 +14,9 @@ http:
     - name: X-GSIS-CalledBy
       value: "{{gsis_39a_calledby}}"
   params:
+    - name: representative
+      value: "152731344"
+      type: path
     - name: vat
       value: "803237662"
       type: path

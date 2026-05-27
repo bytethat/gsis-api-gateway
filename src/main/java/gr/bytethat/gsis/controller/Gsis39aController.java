@@ -4,6 +4,7 @@ import gr.bytethat.gsis.common.abstractions.exception.GsisException;
 import gr.bytethat.gsis.common.abstractions.exception.GsisRemoteException;
 import gr.bytethat.gsis.gsis39a.abstractions.Buyer;
 import gr.bytethat.gsis.gsis39a.abstractions.Gsis39a;
+import gr.bytethat.gsis.gsis39a.abstractions.Otp;
 import gr.bytethat.gsis.gsis39a.abstractions.Representative;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +71,13 @@ public class Gsis39aController {
         gsis39a.deleteRange(vat, representativeId, rangeId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/buyer/{vat}/representatives/{representativeId}/otp")
+    public ResponseEntity<Otp> getOtp(
+            @PathVariable String vat,
+            @PathVariable String representativeId) {
+        return ResponseEntity.ok(gsis39a.getOtp(vat, representativeId));
     }
 
     @ExceptionHandler(GsisRemoteException.class)
