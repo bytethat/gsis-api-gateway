@@ -12,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -560,9 +557,20 @@ public class Gsis39aImpl implements Gsis39a {
     }
 
     private static Representative map(Map.Entry<String, List<RepresentativeResult>> group) {
+
+        var title = Arrays.stream(group.getValue().getFirst().title()
+                        .split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(x -> Arrays.stream(x.split(" "))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .reduce("", (a, b) -> a.isEmpty() ? b : a + " " + b))
+                .reduce("", (a, b) -> a.isEmpty() ? b : a + " " + b);
+
         return new Representative(
                 group.getKey(),
-                group.getValue().getFirst().title(),
+                title,
                 group.getValue()
                         .stream()
                         .map(row -> new Representative.Range(
