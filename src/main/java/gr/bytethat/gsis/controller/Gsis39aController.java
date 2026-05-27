@@ -2,10 +2,7 @@ package gr.bytethat.gsis.controller;
 
 import gr.bytethat.gsis.common.abstractions.exception.GsisException;
 import gr.bytethat.gsis.common.abstractions.exception.GsisRemoteException;
-import gr.bytethat.gsis.gsis39a.abstractions.Buyer;
-import gr.bytethat.gsis.gsis39a.abstractions.Gsis39a;
-import gr.bytethat.gsis.gsis39a.abstractions.Otp;
-import gr.bytethat.gsis.gsis39a.abstractions.Representative;
+import gr.bytethat.gsis.gsis39a.abstractions.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,6 +35,11 @@ public class Gsis39aController {
         gsis39a.deleteBuyer(vat);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/identity-types")
+    public ResponseEntity<List<IdentityType>> getIdentityTypes() {
+        return ResponseEntity.ok(gsis39a.getIdentityTypes());
     }
 
     @GetMapping("/buyer/{vat}/representatives")

@@ -8,6 +8,8 @@ public interface Gsis39a {
     void setBuyer(String vat, String email, String mobile);
     void deleteBuyer(String vat);
 
+    public List<IdentityType> getIdentityTypes();
+
     List<Representative> getBuyerRepresentatives(String vat);
     Optional<Representative> getBuyerRepresentative(String vat, String representativeVat);
 

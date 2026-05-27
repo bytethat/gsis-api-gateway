@@ -3,10 +3,7 @@ package gr.bytethat.gsis.gsis39a.core;
 import gr.bytethat.gsis.common.abstractions.exception.GsisException;
 import gr.bytethat.gsis.common.abstractions.exception.GsisRemoteException;
 import gr.bytethat.gsis.common.core.GreekVatValidator;
-import gr.bytethat.gsis.gsis39a.abstractions.Buyer;
-import gr.bytethat.gsis.gsis39a.abstractions.Gsis39a;
-import gr.bytethat.gsis.gsis39a.abstractions.Otp;
-import gr.bytethat.gsis.gsis39a.abstractions.Representative;
+import gr.bytethat.gsis.gsis39a.abstractions.*;
 import gr.bytethat.gsis.gsis39a.core.client.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -177,6 +174,37 @@ public class Gsis39aImpl implements Gsis39a {
                 .stream()
                 .filter(x -> x.id().equalsIgnoreCase(representativeVat))
                 .findFirst();
+    }
+
+    @Override
+    public List<IdentityType> getIdentityTypes() {
+        return List.of(
+                new IdentityType("1", "ΑΤ ΑΣΤΥΝΟΜΙΚΗ ΤΑΥΤΟΤΗΤΑ"),
+                new IdentityType("8", "ΔΙ ΔΙΑΒΑΤΗΡΙΟ"),
+                new IdentityType("2", "ΕΣ ΕΛΛΗΝΙΚΟΣ ΣΤΡΑΤΟΣ"),
+                new IdentityType("3", "ΠΝ ΠΟΛΕΜΙΚΟ ΝΑΥΤΙΚΟ"),
+                new IdentityType("4", "ΠΑ ΠΟΛΕΜΙΚΗ ΑΕΡΟΠΟΡΙΑ"),
+                new IdentityType("5", "ΕΑ ΕΛΛΗΝΙΚΗ ΑΣΤΥΝΟΜΙΑ"),
+                new IdentityType("6", "ΛΣ ΛΙΜΕΝΙΚΟ ΣΩΜΑ"),
+                new IdentityType("7", "ΠΣ ΠΥΡΟΣΒΕΣΤΙΚΟ ΣΩΜΑ"),
+                new IdentityType("9", "ΚΑ ΚΕΝΤΡΟ ΑΛΛΟΔΑΠΩΝ"),
+                new IdentityType("11", "ΕΝΤΟΛΕΑΣ ΦΠ"),
+                new IdentityType("12", "ΚΠ ΚΑΡΤΑ ΠΑΡΑΜΟΝΗΣ ΠΕΡΙΟΡ ΧΡΟΝ ΔΙΑΡΚ"),
+                new IdentityType("13", "ΤΑΥΤΟΤΗΤΑ ΕΥΡΩΠΑΙΚΗΣ ΕΝΩΣΗΣ"),
+                new IdentityType("14", "ΤΑΥΤΟΤΗΤΑ ΑΝΙΘΑΓΕΝΗ (Ν.139/1975)"),
+                new IdentityType("15", "ΤΑΥΤΟΤΗΤΑ ΟΜΟΓΕΝΟΥΣ"),
+                new IdentityType("16", "ΑΡΙΘΜΟΣ ΚΟΙΝΩΝΙΚΗΣ ΑΣΦΑΛΙΣΗΣ ΗΠΑ"),
+                new IdentityType("17", "ΕΔΤ ΠΟΛΙΤΙΚΟΥ ΠΡΟΣΦΥΓΑ ΥΠΟ ΑΝΑΓΝΩΡΙΣΗ"),
+                new IdentityType("18", "ΕΙΔΙΚΟ ΔΕΛΤΙΟ ΠΟΛΙΤΙΚΟΥ ΦΥΓΑΔΑ"),
+                new IdentityType("19", "ΑΔΕΙΑ ΠΑΡΑΜΟΝΗΣ ΠΡΟΣΦΥΓΑ ΑΤΕΛΩΣ"),
+                new IdentityType("20", "ΕΙΔΙΚΟ ΔΕΛΤΙΟ ΠΡΟΣΦΥΓΑ ΑΝΘΡΩΠ ΚΑΘΕΣΤΩΤΟΣ"),
+                new IdentityType("22", "ΠΙΣΤΟΠΟΙΗΤΙΚΟ ΓΕΝΝΗΣΗΣ ΑΛΛΟΔΑΠΟΥ"),
+                new IdentityType("23", "ΤΑΥΤΟΤΗΤΑ ΧΩΡΑΣ ΕΚΤΟΣ ΕΥΡΩΠΑΙΚΗΣ ΕΝΩΣΗΣ"),
+                new IdentityType("24", "ΑΓ ΕΛΛΗΝΙΚΗ ΑΓΡΟΦΥΛΑΚΗ"),
+                new IdentityType("25", "ΔΕΛΤΙΟ ΑΙΤΟΥΝΤΟΣ ΔΙΕΘΝΗ ΠΡΟΣΤΑΣΙΑ"),
+                new IdentityType("26", "ΑΔΕΙΑ ΔΙΑΜ ΥΠΗΚ ΤΡΙΤ ΧΩΡ ΧΩΡΙΣ ΔΙΑΒΑΤ"),
+                new IdentityType("27", "ΑΔΕΙΑ ΔΙΑΜΟΝ/ΔΙΚΑΙΟΥΧΟΣ ΔΙΕΘΝ ΠΡΟΣΤΑΣΙΑΣ")
+        );
     }
 
     @Override
@@ -488,6 +516,14 @@ public class Gsis39aImpl implements Gsis39a {
     }
 
     private void CreateOrUpdateRepresentativeRange(String vat, Representative representative, Representative.Range range) {
+        var validIdentityType = this.getIdentityTypes()
+                .stream()
+                .anyMatch(x -> x.id().equalsIgnoreCase(range.identity().type()));
+
+        if (!validIdentityType) {
+            throw new GsisException(GsisException.ErrorCodes.INVALID_IDENTITY_TYPE, "Invalid identity type.");
+        }
+
         try {
             // Construct input record using generated ObjectFactory
             var factory = new ObjectFactory();

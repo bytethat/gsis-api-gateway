@@ -32,5 +32,6 @@ public class GsisException extends RuntimeException {
         public static String INVALID_VAT_FORMAT = "INVALID_VAT_FORMAT";
         public static String NOT_FOUND = "NOT_FOUND";
         public static String OVERLAPPING_RANGE = "OVERLAPPING_RANGE";
+        public static String INVALID_IDENTITY_TYPE = "INVALID_IDENTITY_TYPE";
     }
 }
