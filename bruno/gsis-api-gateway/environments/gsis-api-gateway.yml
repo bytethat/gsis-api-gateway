@@ -1,0 +1,14 @@
+name: gsis-api-gateway
+variables:
+  - secret: true
+    name: gsis_registry_username
+  - secret: true
+    name: gsis_registry_password
+  - secret: true
+    name: gsis_registry_calledby
+  - secret: true
+    name: gsis_39a_username
+  - secret: true
+    name: gsis_39a_password
+  - secret: true
+    name: gsis_39a_calledby

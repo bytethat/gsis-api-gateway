@@ -1,0 +1,44 @@
+info:
+  name: Create Buyer Representative
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: http://localhost:8080/api/v1/gsis/39a/buyer/:vat/representatives/:representative
+  headers:
+    - name: X-GSIS-Username
+      value: "{{gsis_39a_username}}"
+    - name: X-GSIS-Password
+      value: "{{gsis_39a_password}}"
+    - name: X-GSIS-CalledBy
+      value: "{{gsis_39a_calledby}}"
+  params:
+    - name: representative
+      value: "152731344"
+      type: path
+    - name: vat
+      value: "803237662"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+          "identity":
+          {
+              "type": "1",
+              "value": "81702"
+          },
+          "start": "2026-03-10T21:00:00Z",
+          "end": "2026-03-20T20:59:59Z",
+          "email": "pkonstantellos@bytethat.gr",
+          "mobile": "6949028294",
+          "otp": false
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
