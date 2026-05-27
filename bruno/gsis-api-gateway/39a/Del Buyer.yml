@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: http://localhost:8080/api/v1/gsis/39a/buyer/:vat?X-GSIS-Username={{gsis_39a_username}}&X-GSIS-Password={{gsis_39a_password}}&X-GSIS-CalledBy={{gsis_39a_calledby}}
+  url: "{{baseUrl}}/api/v1/gsis/39a/buyer/:vat?X-GSIS-Username={{gsis_39a_username}}&X-GSIS-Password={{gsis_39a_password}}&X-GSIS-CalledBy={{gsis_39a_calledby}}"
   params:
     - name: X-GSIS-Username
       value: "{{gsis_39a_username}}"
