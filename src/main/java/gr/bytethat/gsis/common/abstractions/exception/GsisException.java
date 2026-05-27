@@ -33,5 +33,6 @@ public class GsisException extends RuntimeException {
         public static String NOT_FOUND = "NOT_FOUND";
         public static String OVERLAPPING_RANGE = "OVERLAPPING_RANGE";
         public static String INVALID_IDENTITY_TYPE = "INVALID_IDENTITY_TYPE";
+        public static String TOO_MANY_REQUESTS = "TOO_MANY_REQUESTS";
     }
 }
