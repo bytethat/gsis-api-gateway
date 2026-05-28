@@ -1,2 +1,6 @@
 server:
   forward-headers-strategy: native
+  tomcat:
+    remoteip:
+      internal-proxies: .*
+

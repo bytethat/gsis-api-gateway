@@ -4,5 +4,9 @@ server:
 logging:
   level:
     root: INFO
-    gr.bytethat.gsis: DEBUG
+    gr.bytethat.gsis: INFO
     org.springframework.web: INFO
+
+spring:
+  application:
+    name: gsis-gateway-api
