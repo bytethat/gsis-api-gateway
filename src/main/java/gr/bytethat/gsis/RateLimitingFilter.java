@@ -53,8 +53,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(objectMapper.writeValueAsString(new GsisErrorResponse(
                     HttpStatus.TOO_MANY_REQUESTS.value(),
-                    "Internal Server Error",
                     "Too Many Requests",
+                    "You have been rate limited. Please try again later.",
                     GsisException.ErrorCodes.TOO_MANY_REQUESTS
             )));
             response.getWriter().flush();
