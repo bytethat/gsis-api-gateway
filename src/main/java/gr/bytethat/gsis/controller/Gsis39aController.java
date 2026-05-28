@@ -84,6 +84,17 @@ public class Gsis39aController {
 
     @ExceptionHandler(GsisRemoteException.class)
     public ResponseEntity<GsisErrorResponse> handleBusinessException(GsisRemoteException e) {
+        if(e.getCode().equalsIgnoreCase("39AFPA_TOKEN_USERNAME_NOT_AUTHENTICATED")) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new GsisErrorResponse(
+                            HttpStatus.UNAUTHORIZED.value(),
+                            "GSIS Remote Error",
+                            e.getDescription(),
+                            e.getCode()
+                    ));
+        }
+
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(new GsisErrorResponse(
