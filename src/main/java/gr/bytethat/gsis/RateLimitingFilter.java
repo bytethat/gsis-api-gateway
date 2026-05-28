@@ -46,7 +46,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             log.debug("CF-Connecting-IP: {}", request.getHeader("CF-Connecting-IP"));
             log.debug("X-Forwarded-For: {}", request.getHeader("X-Forwarded-For"));
             log.debug("X-Real-IP: {}", request.getHeader("X-Real-IP"));
-            log.debug("Too many requests from IP: {}", ip);
+            log.warn("Rate-limited request from IP: {}", ip);
 
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
