@@ -1,9 +1,9 @@
 {
-  "docker": {
-    "gsis-api-gateway": {
-      "version": "1.0.0",
-      "lastEffectiveRun": "2026-09-01T20:37:35Z",
-      "lastTriggeredBy": "panos-konstantellos"
+    "docker": {
+        "gsis-api-gateway": {
+            "version": "1.0.1",
+            "lastEffectiveRun": "2026-09-01T22:32:50Z",
+            "lastTriggeredBy": "panos-konstantellos"
+        }
     }
-  }
 }
