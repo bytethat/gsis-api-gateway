@@ -36,7 +36,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: registry.bytethat.gr/gsis-api-gateway:${{ github.event.inputs.version }}
+          tags: registry.bytethat.gr/gsis-api-gateway:${{ steps.get-version.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
