@@ -13,4 +13,4 @@ variables:
   - secret: true
     name: gsis_39a_calledby
   - name: baseUrl
-    value: http://localhost:8080
+    value: https://gsis.bytethat.gr
