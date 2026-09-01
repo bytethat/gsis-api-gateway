@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
 
     steps:
       - name: Checkout Repository
@@ -53,3 +55,24 @@ jobs:
           artifact-id: 'gsis-api-gateway'
           artifact-type: 'docker'
           version: '${{ steps.get-version.outputs.version }}'
+  deploy:
+    name: Deploy to Portainer
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Actions
+        uses: actions/checkout@v4
+        with:
+          repository: bytethat/github-actions
+          path: ./.github/private-actions
+          token: ${{ secrets.GH_ACTIONS_PAT }}
+      - name: Deploy to Portainer Stack
+        uses: ./.github/private-actions/portainer-deploy
+        with:
+          portainer_stack_repo: 'bytethat/portainer-deployments'
+          GH_PAT: ${{ secrets.GH_PORTAINER_WRITE_PAT }}
+          path: 'gsis-api-gateway/production/docker-compose.yml'
+          registry: 'registry.bytethat.gr'
+          image: 'gsis-api-gateway'
+          version: '${{ needs.build-and-push.outputs.version }}'
+          portainer_webhook_url: ${{ secrets.PORTAINER_WEBHOOK_URL }}
