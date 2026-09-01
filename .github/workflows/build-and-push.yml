@@ -22,7 +22,7 @@ jobs:
 
       - name: Resolve Artifact Version
         id: get-version
-        uses: ./.github/private-actions/artifact-get-version@main
+        uses: ./.github/private-actions/artifact-get-version
         with:
           artifact-id: 'gsis-api-gateway'
           artifact-type: 'docker'
@@ -48,7 +48,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Persist Artifact Version
-        uses: ./.github/private-actions/artifact-set-version@main
+        uses: ./.github/private-actions/artifact-set-version
         with:
           artifact-id: 'gsis-api-gateway'
           artifact-type: 'docker'
