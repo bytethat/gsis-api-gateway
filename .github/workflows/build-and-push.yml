@@ -17,6 +17,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Resolve Artifact Version
+        id: get-version
+        uses: bytethat/github-actions/artifact-get-version@main
+        with:
+          artifact-id: 'gsis-api-gateway'
+          artifact-type: 'docker'
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -36,3 +43,10 @@ jobs:
           tags: registry.bytethat.gr/gsis-api-gateway:${{ github.event.inputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Persist Artifact Version
+        uses: bytethat/github-actions/artifact-set-version@main
+        with:
+          artifact-id: 'gsis-api-gateway'
+          artifact-type: 'docker'
+          version: '${{ steps.get-version.outputs.version }}'
