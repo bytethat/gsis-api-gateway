@@ -13,9 +13,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Checkout Private Actions
+        uses: actions/checkout@v4
+        with:
+          repository: bytethat/github-actions
+          path: ./.github/private-actions
+          token: ${{ secrets.GH_ACTIONS_PAT }}
+
       - name: Resolve Artifact Version
         id: get-version
-        uses: bytethat/github-actions/artifact-get-version@main
+        uses: ./.github/private-actions/artifact-get-version@main
         with:
           artifact-id: 'gsis-api-gateway'
           artifact-type: 'docker'
@@ -41,7 +48,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Persist Artifact Version
-        uses: bytethat/github-actions/artifact-set-version@main
+        uses: ./.github/private-actions/artifact-set-version@main
         with:
           artifact-id: 'gsis-api-gateway'
           artifact-type: 'docker'
