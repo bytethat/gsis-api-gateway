@@ -1,8 +1,8 @@
 {
     "docker": {
         "gsis-api-gateway": {
-            "version": "1.0.5",
-            "lastEffectiveRun": "2026-09-01T23:58:03Z",
+            "version": "1.0.6",
+            "lastEffectiveRun": "2026-09-02T00:19:31Z",
             "lastTriggeredBy": "panos-konstantellos"
         }
     }
